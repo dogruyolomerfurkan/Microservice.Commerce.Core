@@ -10,7 +10,6 @@ public static class Extensions
 {
     public static IServiceCollection AddMassTransitWithRabbitMq(this IServiceCollection services)
     {
-        services.AddScoped<KebabCaseEndpointNameFormatter>();
         services.AddMassTransit(configure =>
         {
             configure.AddConsumers(Assembly.GetEntryAssembly());
@@ -20,7 +19,7 @@ public static class Extensions
                 var serviceSettings = configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
                 var rabbitMQSettings = configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
                 configurator.Host(rabbitMQSettings.Host);
-                configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(serviceSettings.Name, false));
+                configurator.ConfigureEndpoints(context, KebabCaseEndpointNameFormatter.Instance);
                 configurator.UseMessageRetry(retryConfigurator =>
                     {
                         retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
